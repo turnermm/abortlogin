@@ -21,11 +21,18 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     
     function dw_start(&$event, $param)
     {
-      global $ACT, $INFO, $USERINFO ;
+      global $ACT, $INPUT, $USERINFO;
 
       $ip = $_SERVER['REMOTE_ADDR'];
+     
+      $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
       $test = $this->getConf('test');
       $allowed = $this->getConf('allowed');
+    
+      if( !empty($u) && !empty($p) && $action != 'login'  ) {
+              header("HTTP/1.0 403 Forbidden");           
+              exit("<div style='text-align:center; padding-top:2em;'><h1>403: Login Forbidden</h1></div>");
+      }
       if($test && isset($USERINFO) && in_array('admin', $USERINFO['grps'])) {         
           $tests = explode(',',$test);
           foreach ($tests as $test) {           
@@ -33,7 +40,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
               if(!$this->is_allowed($allowed, $test)) {
                   msg("$test is not a valid IP");
               }    
-               else  msg("$test is a valid IP");         
+               else  msg("$test is a valid IP",2);         
           }           
           return;          
       } 

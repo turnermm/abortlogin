@@ -1,7 +1,8 @@
 base   abortlogin
 author Myron Turner
 email  turnermm02@shaw.ca
-date   2014-05-04
+date   2015-08-08
 name   abortlogin
 desc   prevents attempt to login from non-accepted ip
-url    
+url    https://www.dokuwiki.org/plugin:abortlogin
+
