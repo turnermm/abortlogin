@@ -1,9 +1,8 @@
 <?php
-/**
- * Action adding DW Edit button to page tools (useful with fckedit)
- *
- * @author     Anonymous
- * @author     Myron Turner
+/**  
+ * Action Plugin to limit logins to selected ip addresses
+ * @author  Myron Turner
+ * 
  */
 
 if (!defined('DOKU_INC')) 
