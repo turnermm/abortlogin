@@ -47,9 +47,10 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
       if($ACT == 'login' && !$this->is_allowed($allowed, $ip)) {
               if($this->getConf('log')) {
               $this->log($ip); 
+             }              
               header("HTTP/1.0 403 Forbidden");           
               exit("<div style='text-align:center; padding-top:2em;'><h1>403: Login Not Available</h1></div>");
-      }
+            
         } 
     } 
     
