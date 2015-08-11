@@ -67,7 +67,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
              $cache = $allowed;                   
          }
           
-         if(!$allowed || preg_match("/^" . $allowed . "$/", $ip) ) {    // if allowed string is empty then all ips are allowed                    
+         if(!$allowed || preg_match("/" . $allowed . "/", $ip) ) {    // if allowed string is empty then all ips are allowed                
                return true;
         }
         return false;  
