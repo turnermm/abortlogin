@@ -13,7 +13,7 @@ if (!defined('DOKU_INC'))
 class action_plugin_abortlogin extends DokuWiki_Action_Plugin
 {
 
-    function register(Doku_Event_Handler $controller)
+    function register( Doku_Event_Handler $controller)
     {
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'dw_start');
     }
