@@ -28,6 +28,11 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
       $test = $this->getConf('test');
       $allowed = $this->getConf('allowed');
     
+      if($_REQUEST['do'] =='admin' && empty($_REQUEST['http_credentials'])) {               
+             header("HTTP/1.0 403 Forbidden");           
+             exit("<div style='text-align:center; padding-top:2em;'><h1>403: Login Forbidden</h1></div>");
+       }  
+       
       if( !empty($u) && !empty($p) && $action != 'login'  ) {
               header("HTTP/1.0 403 Forbidden");           
               exit("<div style='text-align:center; padding-top:2em;'><h1>403: Login Forbidden</h1></div>");
