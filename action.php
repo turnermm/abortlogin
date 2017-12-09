@@ -12,6 +12,7 @@ if (!defined('DOKU_INC'))
 
 class action_plugin_abortlogin extends DokuWiki_Action_Plugin
 {
+   private $allowed_v4,$allowed_v6;
 
     function register(Doku_Event_Handler $controller)
     {
@@ -27,6 +28,9 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
       $test = $this->getConf('test');
       $allowed = $this->getConf('allowed');
+      $this->map_allowed($allowed);   
+      // msg(print_r($this->allowed_v6,1));
+      // msg($this->allowed_v4);
     
       if($_REQUEST['do'] =='admin' && empty($_REQUEST['http_credentials']) && empty($USERINFO)) {               
              header("HTTP/1.0 403 Forbidden");           
@@ -43,7 +47,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
              unset($USERINFO) ;
              global $ACT;  $ACT = 'logout';          
       }   
-    
+   // $test=false;
       if($test && isset($USERINFO) && in_array('admin', $USERINFO['grps'])) {         
           $tests = explode(',',$test);
           foreach ($tests as $test) {           
@@ -133,6 +137,24 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
         return base_convert(ltrim($number, '0'), 2, 10);
     }
 
+    function map_allowed($allowed){
+         $allowed_v4 = array();
+         $allowed_v6 = array();
+
+       $allowed = explode(',',$allowed);
+
+        foreach ($allowed AS $addr) {
+            if(valid_ipv6_address($addr)){
+                $allowed_v6[] = trim($addr);
+            }
+            else $allowed_v4[] = trim($addr);
+        }
+    
+        $this->allowed_v4 = implode('|',$allowed_v4);
+        $this->allowed_v6 = $allowed_v6;
+           //msg(print_r($this->allowed_v6,1));
+          // msg($this->allowed_v4);
+    }
      function log($ip) {         
         $log = metaFN('abortlogin:aborted_ip','.log');   
         io_saveFile($log,"$ip\n",1);
