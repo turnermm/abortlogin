@@ -51,9 +51,9 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
           foreach ($tests as $test) {           
               $test = trim($test);  
               if(!$this->is_allowed($allowed, $test)) {
-                  msg("$test is not a valid IP");
+                  msg("$test ". $this->getLang('invalid'));
               }    
-               else  msg("$test is a valid IP",2);         
+               else  msg("$test " . $this->getLang('valid'),2);         
           }           
           return;          
       } 
@@ -70,28 +70,22 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     
      function is_allowed($allowed, $ip) {
          if ($this->valid_ipv6_address( $ip )){
-             //msg("valid ip6 format: $ip");
              return ($this->is_allowed_v6($ip));
          }
         
       if( preg_match('/(\.\d+)+/',$ip)) 
      {
-          //msg("valid ip4 format: $ip");
          return ($this->is_allowed_v4($ip));
      } 
         return false;
     }   
 
     function is_allowed_v6($ip) {
-     $orig = $ip;
-     
           $ip = inet_ptoi($ip);
           foreach ($this->allowed_v6 as $addr) {                         
                 $test = inet_ptoi($addr);              
           
                 if($ip === $test) {
-                 //    msg('test=' .$test . ' =='. $ip);
-                   //  msg('orig=' .$orig . '==='. $addr);
                     return true;  
                 }  
             } 
@@ -146,7 +140,8 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
  
  * @param string $ip IPv4 or IPv6 address to convert
  * @return string 128 bit string that can be used with DECIMNAL(39,0) or false
-  *@author https://www.samclarke.com/php-ipv6-to-128bit-int/
+  *@author Sam Clarke < sam@samclarke.com>
+  *@source  https://www.samclarke.com/php-ipv6-to-128bit-int/
  */
  
 if(!function_exists('inet_ptoi'))
