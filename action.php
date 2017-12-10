@@ -29,8 +29,6 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
       $test = $this->getConf('test');
       $allowed = $this->getConf('allowed');
       $this->map_allowed($allowed);   
-      // msg(print_r($this->allowed_v6,1));
-      // msg($this->allowed_v4);
     
       if($_REQUEST['do'] =='admin' && empty($_REQUEST['http_credentials']) && empty($USERINFO)) {               
              header("HTTP/1.0 403 Forbidden");           
@@ -73,48 +71,38 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
      function is_allowed($allowed, $ip) {
          if ($this->valid_ipv6_address( $ip )){
              //msg("valid ip6 format: $ip");
-             return ($this->is_allowed_v6($allowed, $ip));
+             return ($this->is_allowed_v6($ip));
          }
         
-         
       if( preg_match('/(\.\d+)+/',$ip)) 
      {
           //msg("valid ip4 format: $ip");
-         return ($this->is_allowed_v4($allowed, $ip));
+         return ($this->is_allowed_v4($ip));
      } 
         return false;
     }   
 
-    function is_allowed_v6($allowed, $ip) {
-        $orig = $ip;
-          $allowed =  trim($allowed,', '); 
-          $ip = $this->ipaddress_to_ipnumber($ip); 
-          $ar = explode(",",$allowed);
+    function is_allowed_v6($ip) {
+     $orig = $ip;
+     
+          $ip = inet_ptoi($ip);
+          foreach ($this->allowed_v6 as $addr) {                         
+                $test = inet_ptoi($addr);              
           
-          foreach ($ar as $addr) {
-                $test = $this->ipaddress_to_ipnumber($addr);
-             //   msg("testing: ($orig) $ip  against $addr: " . $test);
-                if($ip == $test) return true;  
+                if($ip === $test) {
+                 //    msg('test=' .$test . ' =='. $ip);
+                   //  msg('orig=' .$orig . '==='. $addr);
+                    return true;  
+                }  
             } 
           return false;
      }   
      
-    function is_allowed_v4($allowed, $ip) {
-         static $cache = '';     
-         
-         if($cache) {
-              $allowed = $cache;              
-         }
-         else {
-         $allowed = trim($allowed,', ');       
-         $allowed = preg_quote($allowed);
-         $allowed=str_replace(array(' ', ','), array("",'|'),$allowed);                   
-             $cache = $allowed;                   
+    function is_allowed_v4($ip) {
+         if(!$this->allowed_v4 || preg_match("/" . $this->allowed_v4 . "/", $ip) ) {    // if allowed string is empty then all ips are allowed
+               return true;
          }
           
-         if(!$allowed || preg_match("/" . $allowed . "/", $ip) ) {    // if allowed string is empty then all ips are allowed                
-               return true;
-        }
         return false;  
      }
      
@@ -125,16 +113,6 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
             return (false); // is not a valid IPv6 Address
 
         return true;
-    }
-
-    function ipaddress_to_ipnumber($ipaddress) {
-        $pton = @inet_pton($ipaddress);
-        if (!$pton) { return false; }
-        $number = '';
-        foreach (unpack('C*', $pton) as $byte) {
-            $number .= str_pad(decbin($byte), 8, '0', STR_PAD_LEFT);
-        }
-        return base_convert(ltrim($number, '0'), 2, 10);
     }
 
     function map_allowed($allowed){
@@ -152,12 +130,73 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     
         $this->allowed_v4 = implode('|',$allowed_v4);
         $this->allowed_v6 = $allowed_v6;
-           //msg(print_r($this->allowed_v6,1));
-          // msg($this->allowed_v4);
+        //   msg(print_r($this->allowed_v6,1) . $this->allowed_v4);
     }
      function log($ip) {         
         $log = metaFN('abortlogin:aborted_ip','.log');   
         io_saveFile($log,"$ip\n",1);
      }
 }
+  
+  /**
+ * Converts human readable representation to a 128 bit int
+ * which can be stored in MySQL using DECIMAL(39,0).
+ *
+ * Requires PHP to be compiled with IPv6 support.
+ 
+ * @param string $ip IPv4 or IPv6 address to convert
+ * @return string 128 bit string that can be used with DECIMNAL(39,0) or false
+  *@author https://www.samclarke.com/php-ipv6-to-128bit-int/
+ */
+ 
+if(!function_exists('inet_ptoi'))
+{
+     include (DOKU_INC . "lib/plugins/abortlogin/Math/BigInteger.php");
+    function inet_ptoi($ip)
+    {
+        // make sure it is an ip
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false)
+            return false;
+
+        $parts = unpack('N*', inet_pton($ip));
+
+        // fix IPv4
+        if (strpos($ip, '.') !== false)
+            $parts = array(1=>0, 2=>0, 3=>0, 4=>$parts[1]);
+
+        foreach ($parts as &$part)
+        {
+            // convert any unsigned ints to signed from unpack.
+            // this should be OK as it will be a PHP float not an int
+            if ($part < 0)
+                $part += 4294967296;
+        }
+
+        // Use BCMath if available
+        if (function_exists('bcadd'))
+        {
+            $decimal = $parts[4];
+            $decimal = bcadd($decimal, bcmul($parts[3], '4294967296'));
+            $decimal = bcadd($decimal, bcmul($parts[2], '18446744073709551616'));
+            $decimal = bcadd($decimal, bcmul($parts[1], '79228162514264337593543950336'));
+        }
+        // Otherwise use the pure PHP BigInteger class
+        else
+        {
+            $decimal = new Math_BigInteger($parts[4]);
+            $part3   = new Math_BigInteger($parts[3]);
+            $part2   = new Math_BigInteger($parts[2]);
+            $part1   = new Math_BigInteger($parts[1]);
+
+            $decimal = $decimal->add($part3->multiply(new Math_BigInteger('4294967296')));
+            $decimal = $decimal->add($part2->multiply(new Math_BigInteger('18446744073709551616')));
+            $decimal = $decimal->add($part1->multiply(new Math_BigInteger('79228162514264337593543950336')));
+
+            $decimal = $decimal->toString();
+        }
+
+        return $decimal;
+    }
+    }
+
 ?>
