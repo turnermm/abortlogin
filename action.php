@@ -116,7 +116,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
        $allowed = explode(',',$allowed);
 
         foreach ($allowed AS $addr) {
-            if(valid_ipv6_address($addr)){
+            if($this->valid_ipv6_address($addr)){
                 $allowed_v6[] = trim($addr);
             }
             else $allowed_v4[] = trim($addr);
