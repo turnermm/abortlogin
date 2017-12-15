@@ -26,7 +26,11 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
       $ip = $_SERVER['REMOTE_ADDR'];
      
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
+      if($this->getConf('enable_test')) {
       $test = $this->getConf('test');
+      } 
+      else $test = "";
+      
       $allowed = $this->getConf('allowed');
       $this->map_allowed($allowed);   
     
