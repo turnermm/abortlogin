@@ -49,7 +49,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
              unset($USERINFO) ;
              global $ACT;  $ACT = 'logout';          
       }   
-   // $test=false;
+
       if($test && isset($USERINFO) && in_array('admin', $USERINFO['grps'])) {         
           $tests = explode(',',$test);
           foreach ($tests as $test) {           
@@ -106,11 +106,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
      
     function valid_ipv6_address( $ipv6 )
     {
-        $regex = '/^(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:(?!$)|$)|\2))(?4){5}((?4){2}|(25[0-5]|(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})\z/i';
-            if(!preg_match($regex, $ipv6))
-            return (false); // is not a valid IPv6 Address
-
-        return true;
+        return filter_var($ipv6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
     }
 
     function map_allowed($allowed){
