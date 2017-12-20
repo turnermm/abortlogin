@@ -238,7 +238,7 @@ class PMA_StringMB     //implements PMA_StringByte
      */
     public function strtolower($string)
     {
-        echo mb_strtolower($string) . "\n";;
+      //  echo mb_strtolower($string) . "\n";;
         return mb_strtolower($string);
     }
 

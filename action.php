@@ -9,7 +9,7 @@ if (!defined('DOKU_INC'))
 {    
     die();
 }
-
+require_once 'Math/ckg_ipv6Test.php';
 class action_plugin_abortlogin extends DokuWiki_Action_Plugin
 {
    private $allowed_v4,$allowed_v6;
@@ -85,10 +85,16 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     }   
 
     function is_allowed_v6($ip) {
+          $ip_to_test = $ip;
           $ip = inet_ptoi($ip);
           foreach ($this->allowed_v6 as $addr) {                         
+                  
+                 if(ckg_ipv6Test($addr, $ip_to_test) ) {
+                     msg($ip_to_test . '->>' . $addr,2) ;             
+                    return true;
+                 }
+                 
                 $test = inet_ptoi($addr);              
-          
                 if($ip === $test) {
                     return true;  
                 }  
@@ -106,7 +112,9 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
      
     function valid_ipv6_address( $ipv6 )
     {
-        return filter_var($ipv6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
+        if(filter_var($ipv6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) return true;
+        if( (strpos($ipv6, '/') !== false ) &&  strpos($ipv6, ':') !== false) return true;
+        return false;
     }
 
     function map_allowed($allowed){
