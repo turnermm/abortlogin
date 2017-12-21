@@ -1,11 +1,14 @@
 <?php
+/*
+  *  Adapted from PHPMyAdmin: libraries/ip_allow_deny.lib.php
+ */
 global $CKG_IPV6_DEBUG;
 $CKG_IPV6_DEBUG = 0;
  require_once 'StringMB.class.php';
 function ckg_ipv6Test($test_range, $ip_to_test)
 {
     $result = true;
-
+    global $ckg_ip_hex, $ckg_first_hex, $ckg_last_hex;
     /** @var PMA_String $pmaString */
   //  $pmaString = $GLOBALS['PMA_String'];
     $pmaString = new PMA_StringMB(); 
@@ -81,7 +84,7 @@ function ckg_ipv6Test($test_range, $ip_to_test)
             $flexbits -= 4;
             $pos -= 1;
         }
-
+        $ckg_ip_hex =$ip_hex; $ckg_first_hex=$first_hex; $ckg_last_hex = $last_hex;
         // check if the IP to test is within the range
         $result = ($ip_hex >= $first_hex && $ip_hex <= $last_hex);
     }
