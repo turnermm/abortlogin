@@ -2,8 +2,6 @@
 /*
   *  Adapted from PHPMyAdmin: libraries/ip_allow_deny.lib.php
  */
-global $CKG_IPV6_DEBUG;
-$CKG_IPV6_DEBUG = 0;
  require_once 'StringMB.class.php';
 function ckg_ipv6Test($test_range, $ip_to_test)
 {
@@ -93,4 +91,3 @@ function ckg_ipv6Test($test_range, $ip_to_test)
 } // end of the "PMA_ipv6MaskTest()" function
 
 
- require "ipv6_tests.php";

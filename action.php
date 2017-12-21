@@ -90,7 +90,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
           foreach ($this->allowed_v6 as $addr) {                         
                   
                  if(ckg_ipv6Test($addr, $ip_to_test) ) {
-                     msg($ip_to_test . '->>' . $addr,2) ;             
+                //     msg($ip_to_test . '->>' . $addr,2) ;             
                     return true;
                  }
                  
@@ -154,7 +154,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
  
 if(!function_exists('inet_ptoi'))
 {
-     include (DOKU_INC . "lib/plugins/abortlogin/Math/BigInteger.php");
+     include_once (DOKU_INC . "lib/plugins/abortlogin/Math/BigInteger.php");
     function inet_ptoi($ip)
     {
         // make sure it is an ip
