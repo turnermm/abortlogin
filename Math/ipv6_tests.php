@@ -10,11 +10,13 @@ function ckg_test_process_ipv6($ini_test="", $ini_range="") {
     if($argc > 1 || $ini_range)
      {        
       $CKG_IPV6_DEBUG = 1;
-     }
-    else if( !$ini_range) {
+       if($argv[1] == '-h') {
         echo "\nUsage:\n";
         echo "\t" .$argv[0] . "  <IP_to_test>  <IP/CIDR>  -v\n\tExample: fe80::19c9:eb59:c1c7:cbcc   fe80::19c9:eb59:c1c7:fbcc/64\n";
+          exit;
     }
+     }
+
     if($CKG_IPV6_DEBUG) {
         if($argc > 1 && !$ini_range) {        
             if(!empty($argv[2])) {                    
@@ -73,9 +75,10 @@ function ckg_test_process_ipv6($ini_test="", $ini_range="") {
       
       }
 }
-global $argc;
+global $argc,$argv;
 $file = "iv6_test.file";
-if($argc < 2 && file_exists($file)) {
+if($argc > 1) $file =$argv[1];
+if(file_exists($file)) {
      echo "using $file\n";
     $ini = parse_ini_file($file,1);
     $keys = array_keys($ini) ;
