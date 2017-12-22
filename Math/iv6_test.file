@@ -1,0 +1,11 @@
+['fe80::19c9:eb59:c1c7:fbcc/64']
+test[]='fe80::19c9:eb59:f1cf:fbfc'
+test[]='fe90::19c9:eb59:f1cf:fbfc'
+test[]='fe80::37c9:eb59:f1cf:fbfc'
+['2001:db8:a::/64']
+test[]='2001:db8:a::'
+test[]='2001:db8:a::ffff:fff0'
+
+
+
+
