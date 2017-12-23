@@ -58,13 +58,13 @@ class admin_plugin_abortlogin extends DokuWiki_Admin_Plugin {
        ptln('<div style="padding:4px; display:none;" id="abortlogin_info">');         
        ptln('<h2>Info</h2>');
        ptln('<div style="text-align:right;">');
-              ptln('<button onclick="jQuery(\'#abortlogin_info\').hide();"> hide</button>');  
+              ptln('<button onclick="jQuery(\'#abortlogin_info\').hide();">'.  $this->getLang('hide_info') . '</button>');  
             //ptln( $this->locale_xhtml(intro) . '</div>');   
       ptln('</div></div>');
        
       
       ptln('<h3>'.$this->getLang($this->output) .'</h3>');
-      ptln('<button onclick="jQuery(\'#abortlogin_info\').show();"> Info</button>');    ptln('<button onclick="jQuery(\'#abortlogin_display\').toggle();">Hide/show output</button>');  
+      ptln('<button onclick="jQuery(\'#abortlogin_info\').toggle();">'. $this->getLang('show_info')  . '</button>');    ptln('<button onclick="jQuery(\'#abortlogin_display\').toggle();">' . $this->getLang('toggle_data') . '</button>');  
       ptln('<div id="abortlogin_display"  style = "white-space:pre;">');
       if($this->output == 'ipv6') {
           $this->get_ipv6();
