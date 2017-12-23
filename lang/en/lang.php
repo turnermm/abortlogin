@@ -7,3 +7,4 @@ $lang['ipv6_brief']  = 'IPv6 Data';
 $lang['cfg_tests'] = "Tests from Configuration Manager";
 $lang['config_tests'] = "Validating IPs from Configuration Manager";
 $lang['ipv6'] = "Validating IPv6 IPs";
+$lang['hide_info'] = "Close";

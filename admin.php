@@ -55,12 +55,21 @@ class admin_plugin_abortlogin extends DokuWiki_Admin_Plugin {
      * output appropriate html
      */
     function html() {
+       ptln('<div style="padding:4px; display:none;" id="abortlogin_info">');         
+       ptln('<h2>Info</h2>');
+       ptln('<div style="text-align:right;">');
+              ptln('<button onclick="jQuery(\'#abortlogin_info\').hide();"> hide</button>');  
+            //ptln( $this->locale_xhtml(intro) . '</div>');   
+      ptln('</div></div>');
+       
+      
       ptln('<h3>'.$this->getLang($this->output) .'</h3>');
+      ptln('<button onclick="jQuery(\'#abortlogin_info\').show();"> Info</button>');    ptln('<button onclick="jQuery(\'#abortlogin_display\').toggle();">Hide/show output</button>');  
       ptln('<div id="abortlogin_display"  style = "white-space:pre;">');
       if($this->output == 'ipv6') {
           $this->get_ipv6();
       }
-      if($this->output == 'config_tests') {
+      else if($this->output == 'config_tests') {
           $this->config_tests(); 
       }
       ptln('</div>');
