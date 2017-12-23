@@ -1,0 +1,119 @@
+<?php
+/**
+ *
+ * 
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Myron Turner <turnermm03@shaw.ca>
+ */
+if (!defined('DOKU_INC')) 
+{    
+    die();
+}
+if(!defined('DOKU_PLUGIN')) define("DOKU_PLUGIN", DOKU_INC . '/lib/plugins/' );
+if (!defined ('ABORTLOGIN_DIR')) define ('ABORTLOGIN_DIR', DOKU_PLUGIN . 'abortlogin/' );
+require_once  ABORTLOGIN_DIR . "Math/ckg_ipv6Test.php";
+require_once ABORTLOGIN_DIR . 'Math/BigInteger.php';
+
+class admin_plugin_abortlogin extends DokuWiki_Admin_Plugin {
+
+    var $output = '';
+  
+    /**
+     * handle user request
+     */
+    function handle() {
+    
+      if (!isset($_REQUEST['cmd'])) return;   // first time - nothing to do
+
+      $this->output = 'invalid';
+      if (!checkSecurityToken()) return;
+      if (!is_array($_REQUEST['cmd'])) return;
+      global $VERBOSE;
+      $VERBOSE = false;
+      // verify valid values
+      switch (key($_REQUEST['cmd'])) {
+        case 'ipv6_all' :
+          $VERBOSE = true;
+           $this->output = 'ipv6';
+        break;
+           case 'ipv6_brief' :
+           $VERBOSE = false;
+           $this->output = 'ipv6';
+        break;
+      }      
+    }
+ 
+    /**
+     * output appropriate html
+     */
+    function html() {
+      ptln('<p>'.$this->output .'</p>');
+      ptln('<div id="abortlogin_display"  style = "white-space:pre;">');
+      if($this->output == 'ipv6') {
+          $this->get_ipv6();
+      }
+      ptln('</div>');
+      
+      ptln('<form action="'.wl($ID).'" method="post">');      
+      
+      // output hidden values to ensure dokuwiki will return back to this plugin
+      ptln('  <input type="hidden" name="do"   value="admin" />');
+      ptln('  <input type="hidden" name="page" value="'.$this->getPluginName().'" />');
+      formSecurityToken();
+
+      ptln('  <input type="submit" name="cmd[ipv6_all]"  value="'.$this->getLang('ipv6_all').'" />');
+      ptln('  <input type="submit" name="cmd[ipv6_brief]"  value="'.$this->getLang('ipv6_brief').'" />');
+      ptln('</form>');
+    }
+    
+    function writeOutData($line) {
+        
+    }
+    
+    function get_ipv6($ini_test="", $ini_range="") {
+        $file =  ABORTLOGIN_DIR . 'Math/iv6_test.file';
+        if(file_exists($file)) {
+            $ini = parse_ini_file($file,1);
+            $keys = array_keys($ini) ;      
+            foreach($keys as $key){                       
+                foreach($ini[$key]['test']as $ip) {                       
+                     $this->ckg_test_process_ipv6(trim($key),trim($ip));        
+                  }
+                echo "\n";
+            }
+        } else echo "$file not found";
+    }
+    function ckg_test_process_ipv6($test_range="", $ip_to_test="") {
+      global $VERBOSE;        
+       global $ckg_ip_hex, $ckg_first_hex, $ckg_last_hex;
+       $result = ckg_ipv6Test($test_range, $ip_to_test);
+        echo "\n\nCIDR range: $test_range \n";
+        echo "IP to test:  $ip_to_test \n";
+        if($result) 
+        {
+            echo "<span style='color:blue;'>IP  is in range\n</span>";
+        }
+        else echo "<span style='color:red;'>IP is not in range</span>\n"; 
+    
+        
+        $a = new Math_BigInteger($ckg_last_hex, 16);    
+        $b =new Math_BigInteger($ckg_first_hex,16); 
+        if($VERBOSE) {
+            echo "ip: $ckg_ip_hex\nLower limit: $ckg_first_hex\nUpper limit: $ckg_last_hex\n";
+            echo "Lower base 10: " .$b->toString();    
+            echo "\n";
+            echo "Upper base 10:  " .$a->toString(); 
+             echo  "\n";
+             $ip_10 = new Math_BigInteger($ckg_ip_hex,16);
+             echo"IP Base 10:  " .  $ip_10->toString();
+             echo  "\n";              
+        } 
+       $d =new Math_BigInteger($a->toString(),10);
+        $e =new Math_BigInteger($b->toString(),10);    
+        $c = $a->subtract($b);
+        echo "Number of IPs in range: " .$c->toString(); 
+        echo  "\n-------------\n"; 
+   }
+
+ }
+    
