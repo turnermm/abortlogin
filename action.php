@@ -72,6 +72,9 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
         } 
     } 
     
+    function getTests() {
+        return $this->getConf('test');
+    }
      function is_allowed($allowed, $ip) {
          if ($this->valid_ipv6_address( $ip )){
              return ($this->is_allowed_v6($ip));

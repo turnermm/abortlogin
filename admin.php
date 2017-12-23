@@ -17,10 +17,14 @@ require_once ABORTLOGIN_DIR . 'Math/BigInteger.php';
 class admin_plugin_abortlogin extends DokuWiki_Admin_Plugin {
 
     var $output = '';
-  
+    var $action;
+    var $tests;
     /**
      * handle user request
      */
+    function __construct() {
+        $this->action =  &plugin_load('action', 'abortlogin');
+    }
     function handle() {
     
       if (!isset($_REQUEST['cmd'])) return;   // first time - nothing to do
@@ -32,25 +36,32 @@ class admin_plugin_abortlogin extends DokuWiki_Admin_Plugin {
       $VERBOSE = false;
       // verify valid values
       switch (key($_REQUEST['cmd'])) {
-        case 'ipv6_all' :
-          $VERBOSE = true;
-           $this->output = 'ipv6';
-        break;
-           case 'ipv6_brief' :
-           $VERBOSE = false;
-           $this->output = 'ipv6';
-        break;
-      }      
+         case 'ipv6_all' :
+            $VERBOSE = true;
+            $this->output = 'ipv6';
+             break;
+        case 'ipv6_brief' :
+            $VERBOSE = false;
+            $this->output = 'ipv6';           
+            break;
+        case 'cfg_tests':
+            $this->output = 'config_tests';           
+            break;
+      }  
+          
     }
  
     /**
      * output appropriate html
      */
     function html() {
-      ptln('<p>'.$this->output .'</p>');
+      ptln('<h3>'.$this->getLang($this->output) .'</h3>');
       ptln('<div id="abortlogin_display"  style = "white-space:pre;">');
       if($this->output == 'ipv6') {
           $this->get_ipv6();
+      }
+      if($this->output == 'config_tests') {
+          $this->config_tests(); 
       }
       ptln('</div>');
       
@@ -63,13 +74,24 @@ class admin_plugin_abortlogin extends DokuWiki_Admin_Plugin {
 
       ptln('  <input type="submit" name="cmd[ipv6_all]"  value="'.$this->getLang('ipv6_all').'" />');
       ptln('  <input type="submit" name="cmd[ipv6_brief]"  value="'.$this->getLang('ipv6_brief').'" />');
+      ptln('  <input type="submit" name="cmd[cfg_tests]"  value="'.$this->getLang('cfg_tests').'" />');
       ptln('</form>');
     }
     
-    function writeOutData($line) {
-        
-    }
     
+    function config_tests() {
+        $this->tests = $this->action->getTests() ;        
+         $tests = explode(',',$this->tests);
+          foreach ($tests as $test) {           
+              $test = trim($test);  
+              if(!$this->action->is_allowed($allowed, $test)) {
+                  echo "<span style='color:red;'>$test ". $this->getLang('invalid') . '</span>' ;                
+              }    
+              else echo   "<span'>$test " . $this->getLang('valid')  .'</span>';
+              echo "\n";
+                   
+          }   
+    }
     function get_ipv6($ini_test="", $ini_range="") {
         $file =  ABORTLOGIN_DIR . 'Math/iv6_test.file';
         if(file_exists($file)) {
