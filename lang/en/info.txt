@@ -1,4 +1,9 @@
-This tool is for testing whether or not IP addresses have access to the login screen. In these tests,if an IP address has access, it will be designated either as ''valid'' or, in the case of the IPv6 tests, ''in range''. Testing for IPv6 uses a file named ''Math/iv6_test.file'', a sample copy of which is included with the plugin. The sample has the following entries:
+This tool is for testing whether or not IP addresses have access to the login screen. In these tests,if an IP address has access, it will be designated either as ''valid'' or, in the case of the IPv6 tests, ''in range''.  There are four options for testing IPs:
+    - IPv6 Data: Verbose
+    - IPv6 Data
+    - Tests from Configuration Manager
+    - Test Single IP
+Options 1 and 2, testing for IPv6, use a file named ''Math/iv6_test.file'', a sample copy of which is included with the plugin.  The sample has the following format:
 
 <code whitespace>
 ['fe80::19c9:eb59:c1c7:fbcc/64']
@@ -10,4 +15,7 @@ test[]='2001:db8:a::'
 test[]='2001:db8:a::ffff:fff0'
 </code>
 
-The bracketed addresses are the CIDR modified IPs, which sets the ip range for that address.  The ''test'' IPs are the ones which you will be testing againt the CIDR IPs to see if they are within range.  
+The bracketed IPs are the CIDR entries((See [[https://www.ipaddressguide.com/cidr|ipaddress guide]] and  [[http://ptgmedia.pearsoncmg.com/images/9781587143137/samplepages/1587143135.pdf|IP fundamentals]])), and the ''test'' IPs are the IPs which will be tested against the CIDRs. You can have as many entries as you require. 
+
+Options 2 and 3 use the data which you have entered into the Configuration Manager.  ''Tests from Configuration Manager'' will give you a listing of all the valid and invalid IPs determined from your listings of ''allowed'' and ''test'' IPs.  ''Test Single IP'' gives you the option of testing any IPv4 or IPv6  against the ''allowed'' list.  
+
