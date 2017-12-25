@@ -22,18 +22,30 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     function dw_start(&$event, $param)
     {
       global $ACT, $INPUT, $USERINFO;
-
+      $admin_ini = false;
       $ip = $_SERVER['REMOTE_ADDR'];
      
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
+      $allowed = $this->getConf('allowed');
+      if(empty($allowed)) return;
+      $this->map_allowed($allowed);   
       if($this->getConf('enable_test')) {
       $test = $this->getConf('test');
+          if(empty($test)) {
+              $test = "$ip";
+              $admin_ini = true;          
       } 
-      else $test = "";
       
-      $allowed = $this->getConf('allowed');
-      $this->map_allowed($allowed);   
+      }  else  $test = "";
     
+      if(!isset($allowed)) return;        
+       if($admin_ini) {
+               if(!$this->is_allowed($allowed, $test)) {
+                  msg("$test ". $this->getLang('invalid'),1);
+              }    
+               else  msg("$test " . $this->getLang('valid'),2);       
+       }
+       if(!$admin_ini)  {
       if($_REQUEST['do'] =='admin' && empty($_REQUEST['http_credentials']) && empty($USERINFO)) {               
              header("HTTP/1.0 403 Forbidden");           
              exit("<div style='text-align:center; padding-top:2em;'><h1>403: Login Forbidden</h1></div>");
@@ -49,7 +61,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
              unset($USERINFO) ;
              global $ACT;  $ACT = 'logout';          
       }   
-
+     } 
       if($test && isset($USERINFO) && in_array('admin', $USERINFO['grps'])) {         
           $tests = explode(',',$test);
           foreach ($tests as $test) {           
@@ -61,7 +73,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
           }           
           return;          
       } 
-      if($test) return;
+      if($admin_ini) return;
       if($ACT == 'login' && !$this->is_allowed($allowed, $ip)) {
               if($this->getConf('log')) {
               $this->log($ip); 
