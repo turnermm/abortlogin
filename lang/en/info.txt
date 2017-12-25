@@ -1,0 +1,13 @@
+This tool is for testing whether or not IP addresses have access to the login screen. In these tests,if an IP address has access, it will be designated either as ''valid'' or, in the case of the IPv6 tests, ''in range''. Testing for IPv6 uses a file named ''Math/iv6_test.file'', a sample copy of which is included with the plugin. The sample has the following entries:
+
+<code whitespace>
+['fe80::19c9:eb59:c1c7:fbcc/64']
+test[]='fe80::19c9:eb59:f1cf:fbfc'
+test[]='fe90::19c9:eb59:f1cf:fbfc'
+test[]='fe80::37c9:eb59:f1cf:fbfc'
+['2001:db8:a::/64']
+test[]='2001:db8:a::'
+test[]='2001:db8:a::ffff:fff0'
+</code>
+
+The bracketed addresses are the CIDR modified IPs, which sets the ip range for that address.  The ''test'' IPs are the ones which you will be testing againt the CIDR IPs to see if they are within range.  
