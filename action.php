@@ -27,6 +27,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
      
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
       $allowed = $this->getConf('allowed');
+      
       if(empty($allowed)) return;
       $this->map_allowed($allowed);   
       if($this->getConf('enable_test')) {
@@ -44,8 +45,9 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
                   msg("$test ". $this->getLang('invalid'),1);
               }    
                else  msg("$test " . $this->getLang('valid'),2);       
+               return;
        }
-       if(!$admin_ini)  {
+     
       if($_REQUEST['do'] =='admin' && empty($_REQUEST['http_credentials']) && empty($USERINFO)) {               
              header("HTTP/1.0 403 Forbidden");           
              exit("<div style='text-align:center; padding-top:2em;'><h1>403: Login Forbidden</h1></div>");
@@ -61,7 +63,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
              unset($USERINFO) ;
              global $ACT;  $ACT = 'logout';          
       }   
-     } 
+    
       if($test && isset($USERINFO) && in_array('admin', $USERINFO['grps'])) {         
           $tests = explode(',',$test);
           foreach ($tests as $test) {           
