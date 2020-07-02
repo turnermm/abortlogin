@@ -31,13 +31,20 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
       if(empty($allowed)) return;
       $this->map_allowed($allowed);   
       if($this->getConf('enable_test')) {
-      $test = $this->getConf('test');
-          if(empty($test)) {
-              $test = "$ip";
-              $admin_ini = true;          
+          $test = $this->getConf('test');
+              if(empty($test)) {
+                  $test = "$ip";
+                  $admin_ini = true;          
+              }
+           if(!$admin_ini) {
+               if(isset($USERINFO) && in_array('admin', $USERINFO['grps'])) {
+                  $admin_ini = true;  
+               }
+           }             
       } 
-      
-      }  else  $test = "";
+      else  {
+        $test = "";
+      }
     
       if(!isset($allowed)) return;        
        if($admin_ini) {
