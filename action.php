@@ -22,7 +22,10 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     function dw_start(&$event, $param)
     {
       global $ACT, $INPUT, $USERINFO;
-      $admin_ini = false;
+      if(!$this->getConf('enable_test')) {          
+         return;
+      }    
+      if($ACT != 'login') return;      
       $ip = $_SERVER['REMOTE_ADDR'];
      
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
