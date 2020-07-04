@@ -19,7 +19,7 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'dw_start');
     }
     
-    function dw_start(&$event, $param)
+    function dw_start(Doku_Event $event, $param)
     {
       global $ACT, $INPUT, $USERINFO;
       if(!$this->getConf('enable_test')) {          
