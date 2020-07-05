@@ -21,11 +21,15 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
     function dw_start(&$event, $param)
     {
       global $ACT, $INPUT, $USERINFO;
+      $ip = $_SERVER['REMOTE_ADDR'];
       if(!$this->getConf('enable_test')) {          
          return;
       }    
+     if(file_exists(DOKU_PLUGIN . 'abortlogin/disabled')) {
+          msg("Remove the disabled file from the plugin directory when you are finished setting up. Your current IP is $ip",2);
+         return;
+     }   
       if($ACT != 'login') return;      
-      $ip = $_SERVER['REMOTE_ADDR'];
      
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
       $test = $this->getConf('test');
