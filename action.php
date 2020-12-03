@@ -19,14 +19,24 @@ class action_plugin_abortlogin extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'dw_start');
     }
     
-    function dw_start(&$event, $param)
+    function dw_start(Doku_Event $event, $param)
     {
       global $ACT, $INPUT, $USERINFO;
+
       if(!$this->getConf('enable_test')) {          
          return;
       }    
       if($ACT != 'login') return;      
+
       $ip = $_SERVER['REMOTE_ADDR'];
+      if(!$this->getConf('enable_test')) {          
+         return;
+      }    
+     if(file_exists(DOKU_PLUGIN . 'abortlogin/disabled')) {
+          msg("Remove the disabled file from the plugin directory when you are finished setting up. Your current IP is $ip",2);
+         return;
+     }   
+      if($ACT != 'login') return;      
      
       $u = $INPUT->str('u'); $p=$INPUT->str('p');  $action = $INPUT->post->str('do');
       $allowed = $this->getConf('allowed');

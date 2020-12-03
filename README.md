@@ -7,4 +7,7 @@ There is a test option available to admins, where a comma seperated list of
   be output to the screen
 An option to log failed IP attempts: the log will be saved in
  data/meta/abortlogin/aborted.log
+ 
+ This branch treats ipv6 as well as ipv4
+
     
